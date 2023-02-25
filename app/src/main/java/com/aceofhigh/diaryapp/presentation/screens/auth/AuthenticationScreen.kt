@@ -1,7 +1,6 @@
 package com.aceofhigh.diaryapp.presentation.screens.auth
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -18,7 +17,10 @@ fun AuthenticationScreen(
     loadingState: Boolean,
     onButtonClick: () -> Unit,
     oneTapSignInState: OneTapSignInState,
-    messageBarState: MessageBarState
+    messageBarState: MessageBarState,
+    onTokenIdReceived: (String) -> Unit,
+    onDialogDismissed: (String) -> Unit
+
 ) {
     Scaffold(
         content = {
@@ -35,13 +37,10 @@ fun AuthenticationScreen(
         state = oneTapSignInState,
         clientId = CLIENT_ID,
         onTokenIdReceived = { tokenId ->
-            Log.d("Auth", tokenId)
-            messageBarState.addSuccess("Successfully Authenticated!")
+            onTokenIdReceived(tokenId)
         },
         onDialogDismissed = { message ->
-            Log.d("Auth", message)
-            messageBarState.addError(Exception(message))
-
+            onDialogDismissed(message)
         }
     )
 }
