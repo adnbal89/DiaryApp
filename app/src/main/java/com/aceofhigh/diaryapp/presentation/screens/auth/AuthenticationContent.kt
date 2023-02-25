@@ -33,7 +33,7 @@ fun AuthenticationContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.weight(10f),
+                modifier = Modifier.weight(weight = 10f),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -52,16 +52,16 @@ fun AuthenticationContent(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize
                 )
-                Column(
-                    modifier = Modifier.weight(weight = 2f),
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    GoogleButton(
-                        loadingState = loadingState,
-                        onClick = onButtonClick
-                    )
+            }
+            Column(
+                modifier = Modifier.weight(weight = 2f),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                GoogleButton(
+                    loadingState = loadingState,
+                    onClick = onButtonClick
+                )
 
-                }
             }
         }
     }
