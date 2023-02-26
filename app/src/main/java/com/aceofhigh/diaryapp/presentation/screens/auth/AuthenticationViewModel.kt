@@ -36,11 +36,11 @@ class AuthenticationViewModel : ViewModel() {
                     ).loggedIn
                 }
                 withContext(Dispatchers.Main) {
-                    if(result){
+                    if (result) {
                         onSuccess()
                         delay(600)
                         authenticated.value = true
-                    }else {
+                    } else {
                         onError(Exception("User is not logged in."))
                     }
                 }
