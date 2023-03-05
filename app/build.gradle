@@ -7,6 +7,7 @@ plugins {
     //id 'com.google.gms.google-services'
 }
 
+
 android {
     namespace 'com.aceofhigh.diaryapp'
     compileSdk 33
