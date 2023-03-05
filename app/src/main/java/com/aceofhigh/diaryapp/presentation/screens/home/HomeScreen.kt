@@ -6,22 +6,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.aceofhigh.diaryapp.R
+import com.aceofhigh.diaryapp.data.repository.Diaries
+import com.aceofhigh.diaryapp.util.RequestState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    diaries: Diaries,
     drawerState: DrawerState,
     onMenuClicked: () -> Unit,
     onSignOutClicked: () -> Unit,
     navigateToWrite: () -> Unit,
 ) {
+    var padding by remember {
+        mutableStateOf(PaddingValues())
+    }
     NavigationDrawer(
         drawerState = drawerState,
         onSignOutClicked = onSignOutClicked
@@ -31,7 +38,12 @@ fun HomeScreen(
                 HomeTopBar(onMenuClicked = onMenuClicked)
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = navigateToWrite) {
+                FloatingActionButton(
+                    modifier = Modifier.padding(
+                        end = padding.calculateEndPadding(LayoutDirection.Ltr)
+                    ),
+                    onClick = navigateToWrite
+                ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "New Diary Icon"
@@ -39,7 +51,32 @@ fun HomeScreen(
                 }
             },
             content = {
-                HomeContent(diaryNotes = mapOf(), onClick = {})
+                padding = it
+                when (diaries) {
+                    is RequestState.Success -> {
+                        HomeContent(
+                            paddingValues = it,
+                            diaryNotes = diaries.data,
+                            onClick = {}
+                        )
+                    }
+                    is RequestState.Error -> {
+                        EmptyPage(
+                            title = "Error",
+                            subtitle = "${diaries.error.message}"
+                        )
+                    }
+                    is RequestState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    else -> {}
+                }
+
             }
         )
     }

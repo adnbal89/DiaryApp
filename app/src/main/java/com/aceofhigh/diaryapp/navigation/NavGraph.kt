@@ -16,6 +16,7 @@ import com.aceofhigh.diaryapp.presentation.components.DisplayAlertDialog
 import com.aceofhigh.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.aceofhigh.diaryapp.presentation.screens.auth.AuthenticationViewModel
 import com.aceofhigh.diaryapp.presentation.screens.home.HomeScreen
+import com.aceofhigh.diaryapp.presentation.screens.home.HomeViewModel
 import com.aceofhigh.diaryapp.util.Constants.APP_ID
 import com.aceofhigh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -98,6 +99,8 @@ fun NavGraphBuilder.homeRoute(
     navigateToAuth: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
+        val viewModel: HomeViewModel = viewModel()
+        val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDialogOpened by remember {
             mutableStateOf(false)
@@ -105,6 +108,7 @@ fun NavGraphBuilder.homeRoute(
         val scope = rememberCoroutineScope()
 
         HomeScreen(
+            diaries = diaries,
             drawerState = drawerState,
             onMenuClicked = {
                 scope.launch {
@@ -116,8 +120,8 @@ fun NavGraphBuilder.homeRoute(
             },
             navigateToWrite = navigateToWrite,
         )
-        
-        LaunchedEffect(key1 = Unit){
+
+        LaunchedEffect(key1 = Unit) {
             MongoDB.configureTheRealm()
         }
         DisplayAlertDialog(
