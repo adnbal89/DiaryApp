@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import com.aceofhigh.diaryapp.data.repository.MongoDB
 import com.aceofhigh.diaryapp.navigation.Screen
 import com.aceofhigh.diaryapp.navigation.SetupNavGraph
 import com.aceofhigh.diaryapp.ui.theme.DiaryAppTheme
@@ -17,16 +16,23 @@ import com.aceofhigh.diaryapp.util.Constants.APP_ID
 import io.realm.kotlin.mongodb.App
 
 class MainActivity : ComponentActivity() {
+    var keepSplashScreenOpened = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition {
+            keepSplashScreenOpened
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             DiaryAppTheme {
                 val navController = rememberNavController()
                 SetupNavGraph(
                     startDestination = getStartDestination(),
-                    navController = navController
+                    navController = navController,
+                    onDataLoaded = {
+                        keepSplashScreenOpened = false
+                    }
                 )
             }
         }
