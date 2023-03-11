@@ -17,9 +17,12 @@ import com.aceofhigh.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.aceofhigh.diaryapp.presentation.screens.auth.AuthenticationViewModel
 import com.aceofhigh.diaryapp.presentation.screens.home.HomeScreen
 import com.aceofhigh.diaryapp.presentation.screens.home.HomeViewModel
+import com.aceofhigh.diaryapp.presentation.screens.write.WriteScreen
 import com.aceofhigh.diaryapp.util.Constants.APP_ID
 import com.aceofhigh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.aceofhigh.diaryapp.util.RequestState
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.rememberPagerState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
@@ -55,7 +58,10 @@ fun SetupNavGraph(
             },
             onDataLoaded = onDataLoaded
         )
-        writeRoute()
+        writeRoute(
+            onBackPressed = {
+                navController.popBackStack()
+            })
     }
 }
 
@@ -163,7 +169,9 @@ fun NavGraphBuilder.homeRoute(
     }
 }
 
-fun NavGraphBuilder.writeRoute() {
+@OptIn(ExperimentalPagerApi::class)
+fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
+
     composable(
         route = Screen.Write.route,
         arguments = listOf(navArgument(name = WRITE_SCREEN_ARGUMENT_KEY) {
@@ -172,6 +180,13 @@ fun NavGraphBuilder.writeRoute() {
             defaultValue = null
         })
     ) {
+        val pagerState = rememberPagerState()
 
+        WriteScreen(
+            selectedDiary = null,
+            pagerState = pagerState,
+            onDeleteConfirmed = {},
+            onBackPressed = onBackPressed
+        )
     }
 }
