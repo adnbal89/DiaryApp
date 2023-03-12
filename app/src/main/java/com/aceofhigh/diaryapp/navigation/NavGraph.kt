@@ -1,5 +1,6 @@
 package com.aceofhigh.diaryapp.navigation
 
+import android.util.Log
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
@@ -18,6 +19,7 @@ import com.aceofhigh.diaryapp.presentation.screens.auth.AuthenticationViewModel
 import com.aceofhigh.diaryapp.presentation.screens.home.HomeScreen
 import com.aceofhigh.diaryapp.presentation.screens.home.HomeViewModel
 import com.aceofhigh.diaryapp.presentation.screens.write.WriteScreen
+import com.aceofhigh.diaryapp.presentation.screens.write.WriteViewModel
 import com.aceofhigh.diaryapp.util.Constants.APP_ID
 import com.aceofhigh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.aceofhigh.diaryapp.util.RequestState
@@ -56,7 +58,10 @@ fun SetupNavGraph(
                 navController.popBackStack()
                 navController.navigate(Screen.Authentication.route)
             },
-            onDataLoaded = onDataLoaded
+            onDataLoaded = onDataLoaded,
+            navigateToWriteWithArgs = {
+                navController.navigate(Screen.Write.passDiaryId(diaryId = it))
+            }
         )
         writeRoute(
             onBackPressed = {
@@ -114,6 +119,7 @@ fun NavGraphBuilder.authenticationRoute(
 
 fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
+    navigateToWriteWithArgs: (String) -> Unit,
     navigateToAuth: () -> Unit,
     onDataLoaded: () -> Unit
 ) {
@@ -144,6 +150,7 @@ fun NavGraphBuilder.homeRoute(
                 signOutDialogOpened = true
             },
             navigateToWrite = navigateToWrite,
+            navigateToWriteWithArgs = navigateToWriteWithArgs
         )
 
         LaunchedEffect(key1 = Unit) {
@@ -180,11 +187,16 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
             defaultValue = null
         })
     ) {
+        val viewModel: WriteViewModel = viewModel()
+        val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
 
         WriteScreen(
+            uiState = uiState,
             selectedDiary = null,
             pagerState = pagerState,
+            onTitleChanged = { viewModel.setTitle(title = it) },
+            onDescriptionChanged = { viewModel.setDescription(description = it) },
             onDeleteConfirmed = {},
             onBackPressed = onBackPressed
         )
